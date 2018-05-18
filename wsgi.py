@@ -9,7 +9,7 @@ def info(bot, update):
   now = datetime.datetime.now()
   update.message.reply_text("Hi!!, " + str(now))
 
-def main():
+def setup():
   # Create Updater object and attach dispatcher to it
   TOKEN = os.environ.get('TELEGRAM_TOKEN')
   #print(TOKENV)
@@ -32,4 +32,4 @@ def main():
   updater.idle()
 
 if __name__ == '__main__':
-  main()
+  setup()
