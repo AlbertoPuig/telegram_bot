@@ -2,7 +2,8 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Regex
 from telegram import ReplyKeyboardMarkup, KeyboardButton
 import datetime
 import os
-import urllib2
+import urllib
+#from urllib.request import urlopen
 import json
 
 
@@ -14,7 +15,7 @@ def start(bot, update):
   print("keyboard loaded")
   bot.send_message(chat_id=update.message.chat_id, text="your message",reply_markup=kb_markup)
   print("end")
-  #habría que probar a poner inlinekeyboard
+  #habria que probar a poner inlinekeyboard
  
 
 def euro1(bot, update):
@@ -27,7 +28,7 @@ def info(bot, update, args):
   update.message.reply_text("Hi!!, " + str(now) + str(args))
 
 def exchange(bot,update, args):
-  response = urllib2.urlopen('http://www.floatrates.com/daily/chf.json')
+  response = urllib.urlopen('http://www.floatrates.com/daily/chf.json')
   data = json.load(response)  
   for key, value in data['eur'].items():
     if key == 'rate':
