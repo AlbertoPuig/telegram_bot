@@ -1,4 +1,4 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, RegexHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, RegexHandler,CallbackQueryHandler
 from telegram import ReplyKeyboardMarkup, KeyboardButton
 import datetime
 import os
@@ -8,17 +8,22 @@ import json
 
 def start(bot, update):
   print("Inside start")
-  kb = [[KeyboardButton('/info')],[KeyboardButton('/exchange')]]
+  kb = [[KeyboardButton('/info')],[KeyboardButton('/exchange')],[KeyboardButton('/euro1')]]
   print("Keyboard created")
-  kb_markup = ReplyKeyboardMarkup(kb)
+  kb_markup = ReplyKeyboardMarkup(kb,resize_keyboard='true')
   print("keyboard loaded")
   bot.send_message(chat_id=update.message.chat_id, text="your message",reply_markup=kb_markup)
   print("end")
+  #habría que probar a poner inlinekeyboard
  
-  
+
+def euro1(bot, update):
+  print ("un euro")
+  update.message.reply_text("un euro")
 
 def info(bot, update, args):
   now = datetime.datetime.now()
+  #bot.edit_message_text(text="Selected option: {}".format(query.data), chat_id=query.message.chat_id, message_id=query.message.message_id)
   update.message.reply_text("Hi!!, " + str(now) + str(args))
 
 def exchange(bot,update, args):
@@ -31,6 +36,8 @@ def exchange(bot,update, args):
         vdate = value
 
   update.message.reply_text("Rate date: " + str(vdate) + '\n' + "Rate value: " + str(vrate))
+
+
 
 
 
@@ -54,6 +61,8 @@ def setup():
   exchange_handler = CommandHandler('exchange',exchange, pass_args=True)
   dispatcher.add_handler(exchange_handler)
 
+  euro1_handler = CommandHandler('euro1',euro1, pass_args=True)
+  dispatcher.add_handler(euro1_handler)
 
   # Start the bot
   updater.start_polling()
