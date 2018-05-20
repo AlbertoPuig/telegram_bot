@@ -2,7 +2,8 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Regex
 from telegram import ReplyKeyboardMarkup, KeyboardButton
 import datetime
 import os
-import urllib
+#import urllib
+import requests
 #from urllib.request import urlopen
 import json
 
@@ -28,14 +29,20 @@ def info(bot, update, args):
   update.message.reply_text("Hi!!, " + str(now) + str(args))
 
 def exchange(bot,update, args):
-  response = urllib.urlopen('http://www.floatrates.com/daily/chf.json')
-  data = json.load(response)  
+  print ("Into exchange")
+  #response = urllib.urlopen('http://www.floatrates.com/daily/chf.json')
+  response = requests.get('http://www.floatrates.com/daily/chf.json')
+  print (response)
+  #data = json.load(response)
+  data = response.json()
+  print (response.json())
+  print (data)  
   for key, value in data['eur'].items():
     if key == 'rate':
         vrate = value
     if key == 'date':
         vdate = value
-
+  print ("antes de hacer el update")
   update.message.reply_text("Rate date: " + str(vdate) + '\n' + "Rate value: " + str(vrate))
 
 
