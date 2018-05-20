@@ -2,80 +2,70 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Regex
 from telegram import ReplyKeyboardMarkup, KeyboardButton
 import datetime
 import os
-#import urllib
 import requests
-#from urllib.request import urlopen
 import json
 
 
 def start(bot, update):
-  print("Inside start")
-  kb = [[KeyboardButton('/info')],[KeyboardButton('/exchange')],[KeyboardButton('/euro1')]]
+  kb = [[KeyboardButton('/info')],[KeyboardButton('/exchange')]]
   print("Keyboard created")
   kb_markup = ReplyKeyboardMarkup(kb,resize_keyboard='true')
   print("keyboard loaded")
-  bot.send_message(chat_id=update.message.chat_id, text="your message",reply_markup=kb_markup)
-  print("end")
-  #habria que probar a poner inlinekeyboard
+  bot.send_message(chat_id=update.message.chat_id, text="Please select command or write '\n' /exchange N<Euros>",reply_markup=kb_markup)
+
  
 
-def euro1(bot, update):
-  print ("un euro")
-  update.message.reply_text("un euro")
-
-def info(bot, update, args):
+def info(bot, update):
   now = datetime.datetime.now()
-  #bot.edit_message_text(text="Selected option: {}".format(query.data), chat_id=query.message.chat_id, message_id=query.message.message_id)
-  update.message.reply_text("Hi!!, " + str(now) + str(args))
+  update.message.reply_text("Hi!!, " + str(now))
 
 def exchange(bot,update, args):
-  print ("Into exchange")
-  #response = urllib.urlopen('http://www.floatrates.com/daily/chf.json')
-  response = requests.get('http://www.floatrates.com/daily/chf.json')
-  print (response)
-  #data = json.load(response)
+  vargs = str(args)
+  vargs=vargs.replace('u', '')
+  vargs=vargs.replace("'", '')
+  vargs=vargs.replace("[", '')
+  vargs=vargs.replace("]", '')
+  try:
+    response = requests.get('http://www.floatrates.com/daily/chf.json')
+  except:
+    response = ''
   data = response.json()
-  print (response.json())
-  print (data)  
   for key, value in data['eur'].items():
     if key == 'rate':
         vrate = value
     if key == 'date':
         vdate = value
-  print ("antes de hacer el update")
-  update.message.reply_text("Rate date: " + str(vdate) + '\n' + "Rate value: " + str(vrate))
-
-
-
+  if args:
+    v1=float(vrate)
+    v2=float(vargs) 
+    vvalue=float(vrate)*float(vargs)
+    update.message.reply_text("Rate date: " + str(vdate) + '\n' + "Rate value: " + str(vrate) + '\n' + "Change is:" + str(vvalue))
+  else:
+    update.message.reply_text("Rate date: " + str(vdate) + '\n' + "Rate value: " + str(vrate))
 
 
 def setup():
   # Create Updater object and attach dispatcher to it
   TOKEN = os.environ.get('TELEGRAM_TOKEN')
- 
-  #print(TOKENV)
   #https://api.telegram.org/file/bot<token>/<file_path>
   updater = Updater(TOKEN)
   dispatcher = updater.dispatcher
-  print("Bot started")
+  print("Bot started...")
 
   # Add command handler to dispatcher
   start_handler = CommandHandler('start',start)
   dispatcher.add_handler(start_handler)
 
-  info_handler = CommandHandler('info',info, pass_args=True)
+  info_handler = CommandHandler('info',info)
   dispatcher.add_handler(info_handler)
 
   exchange_handler = CommandHandler('exchange',exchange, pass_args=True)
   dispatcher.add_handler(exchange_handler)
 
-  euro1_handler = CommandHandler('euro1',euro1, pass_args=True)
-  dispatcher.add_handler(euro1_handler)
-
   # Start the bot
   updater.start_polling()
 
-  # Run the bot until you press Ctrl-C
+  # Run the bot until you press Ctrl-Z
   updater.idle()
 
 if __name__ == '__main__':
