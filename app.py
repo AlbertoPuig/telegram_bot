@@ -4,10 +4,13 @@ import datetime
 import os
 import requests
 import json
+from emoji import emojize
 
 
 def start(bot, update):
-  kb = [[KeyboardButton('/info')],[KeyboardButton('/exchange')]]
+  vemoji = 'U+1F4B6'
+  #emojize("yummy :cake:", use_aliases=True)
+  kb = [[KeyboardButton('/info' + emojize("  :information:", use_aliases=True))],[KeyboardButton('/exchange' + emojize("  :moneybag:", use_aliases=True))]]
   print("Keyboard created")
   kb_markup = ReplyKeyboardMarkup(kb,resize_keyboard='true')
   print("keyboard loaded")
@@ -35,7 +38,8 @@ def exchange(bot,update, args):
         vrate = value
     if key == 'date':
         vdate = value
-  if args:
+  #if args:
+  if len(args) == 1 and args[0].isdigit():
     v1=float(vrate)
     v2=float(vargs) 
     vvalue=float(vrate)*float(vargs)
